@@ -1,98 +1,67 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Librix
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Librix é uma API RESTful de gerenciamento de biblioteca digital, desenvolvida com o objetivo de aprimorar habilidades em desenvolvimento back-end, explorando conceitos básicos, intermediários e avançados de TypeScript.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Esta é uma aplicação real sendo construída incrementalmente e evoluindo conforme novos conceitos são dominados.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Stack Tecnológica
 
-## Project setup
+### Core
+- **TypeScript** — Tipagem estática e ferramentas avançadas
+- **NestJS** — Framework Node.js modular e escalável
+- **TypeORM** — ORM com suporte a múltiplos bancos de dados
+- **PostgreSQL** — Banco de dados relacional
 
-```bash
-$ npm install
-```
+### Ferramentas e Bibliotecas
+- **class-validator** — Validação de DTOs
+- **class-transformer** — Transformação e serialização de objetos
+- **UUID** — Geração de identificadores únicos
+- **Chalk** — Logs coloridos para melhor debugging
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## Objetivos de Aprendizado
 
-# watch mode
-$ npm run start:dev
+Este projeto está me ajudando a dominar:
 
-# production mode
-$ npm run start:prod
-```
+### Já implementado
+- Estrutura modular com NestJS
+- CRUD completo (Users e Books)
+- Validação robusta com DTOs e decorators
+- Tipagem forte com TypeScript
+- Persistência com TypeORM + PostgreSQL
+- Boas práticas REST (status codes, endpoints semânticos)
+- Response DTOs com class-transformer
+- Tratamento de erros com exceptions do NestJS
 
-## Run tests
+### Em desenvolvimento
+- Relacionamentos entre entidades (User ↔ Book empréstimos)
+- Filtros avançados e paginação
+- Migrations com TypeORM
+- Testes unitários e E2E
+- Autenticação JWT
+- Documentação com Swagger/OpenAPI
+- CI/CD pipeline
 
-```bash
-# unit tests
-$ npm run test
+---
 
-# e2e tests
-$ npm run test:e2e
+## Motivação
 
-# test coverage
-$ npm run test:cov
-```
+Escolhi NestJS por sua arquitetura modular inspirada no Angular, suporte nativo a TypeScript e vasta documentação.  
+Permite aplicar princípios SOLID naturalmente.
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Por que TypeORM?
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+TypeORM oferece um equilíbrio entre produtividade e controle sobre queries SQL, além de excelente integração com NestJS e suporte a migrations.
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+---
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Padrões aplicados
+- **Repository Pattern** — Abstração da camada de dados
+- **DTO Pattern** — Separação de entrada/saída da API vs. entidades de domínio
+- **Dependency Injection** — Facilita testes e desacoplamento
+- **Decorator Pattern** — Validações declarativas com class-validator
