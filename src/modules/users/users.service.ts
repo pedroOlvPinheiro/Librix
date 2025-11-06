@@ -4,7 +4,7 @@ import { UpdateUserDTO } from './dto/update-user.dto';
 import { UserResponseDTO } from './dto/user-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 
 @Injectable()
@@ -41,12 +41,18 @@ export class UsersService {
   }
 
   async searchBy(name?: string, email?: string) {
-    console.log(name, email);
+    if (!name && !email) return;
+
+    const where = [
+      name && { name: ILike(`%${name}%`) },
+      email && { email: ILike(`%${email}%`) },
+    ].filter(Boolean) as FindOptionsWhere<User>[];
+
     const users = await this.userRepository.find({
-      where: [{ name: ILike(`${name}`) }, { email: ILike(`${email}`) }],
+      where: where.length ? where : undefined,
     });
 
-    console.log(users);
+    return users;
   }
 
   update(id: string, user: UpdateUserDTO) {
