@@ -1,0 +1,75 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateUserDTO } from './dto/create-user.dto';
+import { UpdateUserDTO } from './dto/update-user.dto';
+import { UserResponseDTO } from './dto/user-response.dto';
+import { plainToInstance } from 'class-transformer';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ILike, Repository } from 'typeorm';
+import { User } from 'src/entities/user.entity';
+
+@Injectable()
+export class UsersService {
+  private users: User[] = [];
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  async create(user: CreateUserDTO) {
+    const newUser = this.userRepository.create(user);
+    await this.userRepository.save(newUser);
+  }
+
+  async findAll(): Promise<UserResponseDTO[]> {
+    const allUsers = await this.userRepository.find();
+
+    return allUsers.map((user) =>
+      plainToInstance(UserResponseDTO, user, {
+        excludeExtraneousValues: true,
+      }),
+    );
+  }
+
+  async findOne(id: string): Promise<UserResponseDTO> {
+    const user = await this.userRepository.findOneBy({ id: id });
+
+    if (!user) throw new NotFoundException(`Usuário não encontado`);
+
+    return plainToInstance(UserResponseDTO, user, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async searchBy(name?: string, email?: string) {
+    console.log(name, email);
+    const users = await this.userRepository.find({
+      where: [{ name: ILike(`${name}`) }, { email: ILike(`${email}`) }],
+    });
+
+    console.log(users);
+  }
+
+  update(id: string, user: UpdateUserDTO) {
+    const existingUserIndex = this.users.findIndex((user) => user.id === id);
+
+    if (existingUserIndex === -1) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    const existingUser = this.users[existingUserIndex];
+    const updatedUser = { ...existingUser, ...user };
+
+    this.users[existingUserIndex] = updatedUser;
+  }
+
+  delete(id: string) {
+    const removeUserIndex = this.users.findIndex((user) => user.id === id);
+    console.log(removeUserIndex);
+
+    if (removeUserIndex == -1) {
+      throw new NotFoundException(`Usuário não encontrado`);
+    }
+
+    this.users.splice(removeUserIndex, 1);
+  }
+}
