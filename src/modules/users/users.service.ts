@@ -66,14 +66,11 @@ export class UsersService {
     });
   }
 
-  delete(id: string) {
-    const removeUserIndex = this.users.findIndex((user) => user.id === id);
-    console.log(removeUserIndex);
+  async delete(id: string) {
+    const existingUser = await this.userRepository.findOneBy({ id });
 
-    if (removeUserIndex == -1) {
-      throw new NotFoundException(`Usuário não encontrado`);
-    }
+    if (!existingUser) throw new NotFoundException(`Usuário não encontrado`);
 
-    this.users.splice(removeUserIndex, 1);
+    await this.userRepository.delete({ id });
   }
 }
