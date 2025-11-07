@@ -55,17 +55,15 @@ export class UsersService {
     return users;
   }
 
-  update(id: string, user: UpdateUserDTO) {
-    const existingUserIndex = this.users.findIndex((user) => user.id === id);
+  async update(id: string, user: UpdateUserDTO) {
+    const existingUser = await this.userRepository.findOneBy({ id });
 
-    if (existingUserIndex === -1) {
-      throw new NotFoundException('Usuário não encontrado');
-    }
+    if (!existingUser) throw new NotFoundException(`Usuário não encontrado`);
 
-    const existingUser = this.users[existingUserIndex];
-    const updatedUser = { ...existingUser, ...user };
-
-    this.users[existingUserIndex] = updatedUser;
+    await this.userRepository.save({
+      id: existingUser.id,
+      ...user,
+    });
   }
 
   delete(id: string) {

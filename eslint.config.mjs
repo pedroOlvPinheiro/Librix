@@ -34,6 +34,10 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unused-expressions': 'warn',
+      '@typescript-eslint/no-multiple-empty-lines': [
+        'warn',
+        { max: 2, maxEOF: 1 },
+      ],
       'linebreak-style': 'warn',
     },
   },
