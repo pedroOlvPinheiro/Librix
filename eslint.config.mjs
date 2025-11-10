@@ -39,6 +39,7 @@ export default tseslint.config(
         { max: 2, maxEOF: 1 },
       ],
       'linebreak-style': 'warn',
+      'prettier/prettier': ['warn', { endOfLine: 'auto' }],
     },
   },
 );

@@ -31,7 +31,7 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get('find-one/:id')
+  @Get(':id')
   async findOne(
     @Param() findOneParams: FindOneParams,
   ): Promise<UserResponseDTO> {
