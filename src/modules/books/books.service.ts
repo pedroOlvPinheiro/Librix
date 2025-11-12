@@ -1,76 +1,53 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Book } from 'src/entities/book.entity';
 import { CreateBookDTO } from './dto/create-book.dto';
-import { v4 as uuidv4 } from 'uuid';
 import { UpdateBookDTO } from './dto/update-book.dto';
 import { BookResponseDTO } from './dto/book-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Book } from 'src/entities/book.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BooksService {
-  private readonly books: Book[] = [];
+  constructor(
+    @InjectRepository(Book)
+    private readonly bookRepository: Repository<Book>,
+  ) {}
 
   create(book: CreateBookDTO) {
-    const newBook = this.buildBook(book);
-    this.books.push(newBook);
+    const newBook = this.bookRepository.create(book);
+    this.bookRepository.save(newBook);
   }
 
-  findAll(): BookResponseDTO[] {
-    return this.books.map((book) =>
+  async findAll(): Promise<BookResponseDTO[]> {
+    const books = await this.bookRepository.find();
+    return books.map((book) =>
       plainToInstance(BookResponseDTO, book, { excludeExtraneousValues: true }),
     );
   }
 
-  findOne(id?: string, title?: string): BookResponseDTO | undefined {
-    const normalizedTitle = title?.toLowerCase();
-
-    const book = this.books.find(
-      (book) =>
-        (id && book.id === id) ||
-        (normalizedTitle && book.title.toLowerCase().includes(normalizedTitle)),
-    );
+  async findOne(id: string): Promise<BookResponseDTO> {
+    const book = await this.bookRepository.findOneBy({ id });
 
     return plainToInstance(BookResponseDTO, book, {
       excludeExtraneousValues: true,
     });
   }
 
-  update(id: string, updateBookDTO: UpdateBookDTO) {
-    const currentBookIndex = this.books.findIndex((book) => book.id === id);
+  async update(id: string, updateBookDTO: UpdateBookDTO) {
+    const existingBook = await this.bookRepository.findOneBy({ id });
 
-    if (currentBookIndex === -1) {
-      throw new NotFoundException(`Livro não encontrado`);
-    }
+    if (!existingBook) throw new NotFoundException(`Livro não encontrado`);
 
-    this.books[currentBookIndex] = {
-      ...this.books[currentBookIndex],
+    await this.bookRepository.save({
+      id,
       ...updateBookDTO,
-    };
+    });
   }
 
-  delete(id: string) {
-    const bookIndex = this.books.findIndex((book) => book.id === id);
+  async delete(id: string) {
+    const { affected } = await this.bookRepository.delete({ id });
 
-    if (bookIndex === -1) {
-      throw new NotFoundException(`Livro não encontrado`);
-    }
-
-    this.books.splice(bookIndex, 1);
-  }
-
-  buildBook(book: CreateBookDTO): Book {
-    return {
-      id: uuidv4(),
-
-      title: book.title,
-
-      author: book.author,
-
-      publishedYear: book.publishedYear,
-
-      isbn: book.isbn,
-
-      createdAt: new Date(),
-    };
+    if (affected === 0) throw new NotFoundException(`Livro não encontrado`);
   }
 }
