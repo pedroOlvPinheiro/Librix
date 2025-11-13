@@ -45,13 +45,13 @@ export class UsersController {
 
   @Patch(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  update(@Param() param: FindOneParams, @Body() user: UpdateUserDTO) {
-    return this.usersService.update(param.id, user);
+  async update(@Param() param: FindOneParams, @Body() user: UpdateUserDTO) {
+    await this.usersService.update(param.id, user);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  delete(@Param() param: FindOneParams) {
-    return this.usersService.delete(param.id);
+  async delete(@Param() param: FindOneParams) {
+    await this.usersService.delete(param.id);
   }
 }

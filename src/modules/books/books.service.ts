@@ -5,7 +5,7 @@ import { BookResponseDTO } from './dto/book-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from 'src/entities/book.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class BooksService {
@@ -34,15 +34,25 @@ export class BooksService {
     });
   }
 
+  async searchBy(title: string): Promise<Partial<BookResponseDTO[]>> {
+    const booksSearch = await this.bookRepository.find({
+      where: { title: ILike(`%${title}%`) },
+    });
+
+    return booksSearch.map((book) =>
+      plainToInstance(BookResponseDTO, book, { excludeExtraneousValues: true }),
+    );
+  }
+
   async update(id: string, updateBookDTO: UpdateBookDTO) {
-    const existingBook = await this.bookRepository.findOneBy({ id });
-
-    if (!existingBook) throw new NotFoundException(`Livro não encontrado`);
-
-    await this.bookRepository.save({
+    const bookToUpdate = await this.bookRepository.preload({
       id,
       ...updateBookDTO,
     });
+
+    if (!bookToUpdate) throw new NotFoundException(`Livro não encontrado`);
+
+    await this.bookRepository.save(bookToUpdate);
   }
 
   async delete(id: string) {

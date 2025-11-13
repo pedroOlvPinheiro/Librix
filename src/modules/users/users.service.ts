@@ -55,21 +55,19 @@ export class UsersService {
   }
 
   async update(id: string, user: UpdateUserDTO) {
-    const existingUser = await this.userRepository.findOneBy({ id });
-
-    if (!existingUser) throw new NotFoundException(`Usuário não encontrado`);
-
-    await this.userRepository.save({
-      id: existingUser.id,
+    const userToUpdate = await this.userRepository.preload({
+      id,
       ...user,
     });
+
+    if (!userToUpdate) throw new NotFoundException(`Usuário não encontrado`);
+
+    await this.userRepository.save(userToUpdate);
   }
 
   async delete(id: string) {
-    const existingUser = await this.userRepository.findOneBy({ id });
+    const { affected } = await this.userRepository.delete({ id });
 
-    if (!existingUser) throw new NotFoundException(`Usuário não encontrado`);
-
-    await this.userRepository.delete({ id });
+    if (affected === 0) throw new NotFoundException(`Usuário não encontrado`);
   }
 }
