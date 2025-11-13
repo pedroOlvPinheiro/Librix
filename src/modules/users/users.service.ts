@@ -14,7 +14,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(user: CreateUserDTO) {
+  async create(user: CreateUserDTO): Promise<void> {
     const newUser = this.userRepository.create(user);
     await this.userRepository.save(newUser);
   }
@@ -27,16 +27,6 @@ export class UsersService {
         excludeExtraneousValues: true,
       }),
     );
-  }
-
-  async findOne(id: string): Promise<UserResponseDTO> {
-    const user = await this.userRepository.findOneBy({ id: id });
-
-    if (!user) throw new NotFoundException(`Usuário não encontado`);
-
-    return plainToInstance(UserResponseDTO, user, {
-      excludeExtraneousValues: true,
-    });
   }
 
   async searchBy(name?: string, email?: string) {
@@ -54,7 +44,17 @@ export class UsersService {
     return users;
   }
 
-  async update(id: string, user: UpdateUserDTO) {
+  async findOne(id: string): Promise<UserResponseDTO> {
+    const user = await this.userRepository.findOneBy({ id: id });
+
+    if (!user) throw new NotFoundException(`Usuário não encontado`);
+
+    return plainToInstance(UserResponseDTO, user, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async update(id: string, user: UpdateUserDTO): Promise<void> {
     const userToUpdate = await this.userRepository.preload({
       id,
       ...user,
@@ -65,7 +65,7 @@ export class UsersService {
     await this.userRepository.save(userToUpdate);
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<void> {
     const { affected } = await this.userRepository.delete({ id });
 
     if (affected === 0) throw new NotFoundException(`Usuário não encontrado`);

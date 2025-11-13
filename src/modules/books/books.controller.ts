@@ -22,8 +22,8 @@ export class BooksController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() book: CreateBookDTO) {
-    this.booksService.create(book);
+  async create(@Body() book: CreateBookDTO): Promise<void> {
+    await this.booksService.create(book);
   }
 
   @Get()
@@ -32,9 +32,7 @@ export class BooksController {
   }
 
   @Get('search')
-  async searchBy(
-    @Query('title') title: string,
-  ): Promise<Partial<BookResponseDTO[]>> {
+  async searchBy(@Query('title') title: string): Promise<BookResponseDTO[]> {
     return this.booksService.searchBy(title);
   }
 
@@ -47,16 +45,16 @@ export class BooksController {
 
   @Patch(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async Update(
+  async update(
     @Param() findOneParams: FindOneParams,
     @Body() updateBookDTO: UpdateBookDTO,
-  ) {
+  ): Promise<void> {
     await this.booksService.update(findOneParams.id, updateBookDTO);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async Delete(@Param() findOneParams: FindOneParams) {
+  async delete(@Param() findOneParams: FindOneParams): Promise<void> {
     await this.booksService.delete(findOneParams.id);
   }
 }

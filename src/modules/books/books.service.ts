@@ -14,9 +14,9 @@ export class BooksService {
     private readonly bookRepository: Repository<Book>,
   ) {}
 
-  create(book: CreateBookDTO) {
+  async create(book: CreateBookDTO): Promise<void> {
     const newBook = this.bookRepository.create(book);
-    this.bookRepository.save(newBook);
+    await this.bookRepository.save(newBook);
   }
 
   async findAll(): Promise<BookResponseDTO[]> {
@@ -26,15 +26,9 @@ export class BooksService {
     );
   }
 
-  async findOne(id: string): Promise<BookResponseDTO> {
-    const book = await this.bookRepository.findOneBy({ id });
+  async searchBy(title: string): Promise<BookResponseDTO[]> {
+    if (!title) return [];
 
-    return plainToInstance(BookResponseDTO, book, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  async searchBy(title: string): Promise<Partial<BookResponseDTO[]>> {
     const booksSearch = await this.bookRepository.find({
       where: { title: ILike(`%${title}%`) },
     });
@@ -44,7 +38,17 @@ export class BooksService {
     );
   }
 
-  async update(id: string, updateBookDTO: UpdateBookDTO) {
+  async findOne(id: string): Promise<BookResponseDTO> {
+    const book = await this.bookRepository.findOneBy({ id });
+
+    if (!book) throw new NotFoundException(`Livro não encontrado`);
+
+    return plainToInstance(BookResponseDTO, book, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async update(id: string, updateBookDTO: UpdateBookDTO): Promise<void> {
     const bookToUpdate = await this.bookRepository.preload({
       id,
       ...updateBookDTO,
@@ -55,7 +59,7 @@ export class BooksService {
     await this.bookRepository.save(bookToUpdate);
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<void> {
     const { affected } = await this.bookRepository.delete({ id });
 
     if (affected === 0) throw new NotFoundException(`Livro não encontrado`);
