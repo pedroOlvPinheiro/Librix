@@ -1,7 +1,8 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { Content } from './content.entity';
+import { Loan } from './loan.entity';
 
-@Entity()
+@Entity('book')
 export class Book extends Content {
   @Column({ nullable: false })
   title: string;
@@ -14,4 +15,7 @@ export class Book extends Content {
 
   @Column({ nullable: false })
   isbn: string;
+
+  @OneToMany(() => Loan, (loan) => loan.book)
+  loan: Loan;
 }
