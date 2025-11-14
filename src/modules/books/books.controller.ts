@@ -22,35 +22,39 @@ export class BooksController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() book: CreateBookDTO) {
-    this.booksService.create(book);
+  async create(@Body() book: CreateBookDTO): Promise<void> {
+    await this.booksService.create(book);
   }
 
   @Get()
-  findAll(): BookResponseDTO[] {
+  async findAll(): Promise<BookResponseDTO[]> {
     return this.booksService.findAll();
   }
 
-  @Get('find-one')
-  findOne(
-    @Query('id') id?: string,
-    @Query('title') title?: string,
-  ): BookResponseDTO | undefined {
-    return this.booksService.findOne(id, title);
+  @Get('search')
+  async searchBy(@Query('title') title: string): Promise<BookResponseDTO[]> {
+    return this.booksService.searchBy(title);
+  }
+
+  @Get(':id')
+  async findOne(
+    @Param() findOneParams: FindOneParams,
+  ): Promise<BookResponseDTO> {
+    return this.booksService.findOne(findOneParams.id);
   }
 
   @Patch(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  Update(
+  async update(
     @Param() findOneParams: FindOneParams,
     @Body() updateBookDTO: UpdateBookDTO,
-  ) {
-    this.booksService.update(findOneParams.id, updateBookDTO);
+  ): Promise<void> {
+    await this.booksService.update(findOneParams.id, updateBookDTO);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  Delete(@Param() findOneParams: FindOneParams) {
-    return this.booksService.delete(findOneParams.id);
+  async delete(@Param() findOneParams: FindOneParams): Promise<void> {
+    await this.booksService.delete(findOneParams.id);
   }
 }

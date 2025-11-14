@@ -22,13 +22,18 @@ export class UsersController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() user: CreateUserDTO) {
+  async create(@Body() user: CreateUserDTO): Promise<void> {
     await this.usersService.create(user);
   }
 
   @Get()
   async findAll(): Promise<UserResponseDTO[]> {
     return this.usersService.findAll();
+  }
+
+  @Get('search')
+  async searchBy(@Query('name') name: string, @Query('email') email?: string) {
+    return this.usersService.searchBy(name, email);
   }
 
   @Get(':id')
@@ -38,20 +43,18 @@ export class UsersController {
     return this.usersService.findOne(findOneParams.id);
   }
 
-  @Get('search')
-  async searchBy(@Query('name') name: string, @Query('email') email?: string) {
-    return this.usersService.searchBy(name, email);
-  }
-
   @Patch(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  update(@Param() param: FindOneParams, @Body() user: UpdateUserDTO) {
-    return this.usersService.update(param.id, user);
+  async update(
+    @Param() param: FindOneParams,
+    @Body() user: UpdateUserDTO,
+  ): Promise<void> {
+    await this.usersService.update(param.id, user);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  delete(@Param() param: FindOneParams) {
-    return this.usersService.delete(param.id);
+  async delete(@Param() param: FindOneParams): Promise<void> {
+    await this.usersService.delete(param.id);
   }
 }

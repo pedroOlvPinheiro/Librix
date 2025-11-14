@@ -9,13 +9,12 @@ import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [];
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(user: CreateUserDTO) {
+  async create(user: CreateUserDTO): Promise<void> {
     const newUser = this.userRepository.create(user);
     await this.userRepository.save(newUser);
   }
@@ -28,16 +27,6 @@ export class UsersService {
         excludeExtraneousValues: true,
       }),
     );
-  }
-
-  async findOne(id: string): Promise<UserResponseDTO> {
-    const user = await this.userRepository.findOneBy({ id: id });
-
-    if (!user) throw new NotFoundException(`Usuário não encontado`);
-
-    return plainToInstance(UserResponseDTO, user, {
-      excludeExtraneousValues: true,
-    });
   }
 
   async searchBy(name?: string, email?: string) {
@@ -55,22 +44,30 @@ export class UsersService {
     return users;
   }
 
-  async update(id: string, user: UpdateUserDTO) {
-    const existingUser = await this.userRepository.findOneBy({ id });
+  async findOne(id: string): Promise<UserResponseDTO> {
+    const user = await this.userRepository.findOneBy({ id: id });
 
-    if (!existingUser) throw new NotFoundException(`Usuário não encontrado`);
+    if (!user) throw new NotFoundException(`Usuário não encontado`);
 
-    await this.userRepository.save({
-      id: existingUser.id,
-      ...user,
+    return plainToInstance(UserResponseDTO, user, {
+      excludeExtraneousValues: true,
     });
   }
 
-  async delete(id: string) {
-    const existingUser = await this.userRepository.findOneBy({ id });
+  async update(id: string, user: UpdateUserDTO): Promise<void> {
+    const userToUpdate = await this.userRepository.preload({
+      id,
+      ...user,
+    });
 
-    if (!existingUser) throw new NotFoundException(`Usuário não encontrado`);
+    if (!userToUpdate) throw new NotFoundException(`Usuário não encontrado`);
 
-    await this.userRepository.delete({ id });
+    await this.userRepository.save(userToUpdate);
+  }
+
+  async delete(id: string): Promise<void> {
+    const { affected } = await this.userRepository.delete({ id });
+
+    if (affected === 0) throw new NotFoundException(`Usuário não encontrado`);
   }
 }
