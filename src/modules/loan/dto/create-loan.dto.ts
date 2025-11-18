@@ -2,8 +2,8 @@ import { IsUUID } from 'class-validator';
 
 export class CreateLoanDTO {
   @IsUUID()
-  idUser: string;
+  userId: string;
 
   @IsUUID()
-  idBook: string;
+  bookId: string;
 }
