@@ -16,6 +16,6 @@ export class Book extends Content {
   @Column({ nullable: false })
   isbn: string;
 
-  @OneToMany(() => Loan, (loan) => loan.book)
-  loan: Loan;
+  @OneToMany(() => Loan, (loans) => loans.book)
+  loans: Loan[];
 }

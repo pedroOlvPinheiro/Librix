@@ -38,7 +38,7 @@ export class Loan extends Content {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Book, (book) => book.loan)
+  @ManyToOne(() => Book, (book) => book.loans)
   @JoinColumn({ name: 'book_id' })
   book: Book;
 }

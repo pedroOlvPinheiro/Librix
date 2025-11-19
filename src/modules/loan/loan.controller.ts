@@ -9,6 +9,6 @@ export class LoanController {
 
   @Post()
   async create(@Body() createLoanDTO: CreateLoanDTO): Promise<LoanResponseDTO> {
-    this.loanService.create(createLoanDTO);
+    return this.loanService.create(createLoanDTO);
   }
 }
