@@ -32,32 +32,31 @@ export class LoanService {
       id: createLoanDTO.userId,
     });
 
-    const book = await this.bookRepository.findOneOrFail({
-      where: { id: createLoanDTO.bookId },
-      relations: { loans: true },
-    });
+    const [book, activeLoansCount, isBookLoaned] = await Promise.all([
+      this.bookRepository.findOneByOrFail({ id: createLoanDTO.bookId }),
 
-    const loansByUser = await this.loanRepository.findAndCount({
-      where: { user: { id: user.id } },
-      relations: { user: true },
-    });
+      this.loanRepository.count({
+        where: {
+          user: { id: createLoanDTO.userId },
+          status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
+        },
+      }),
 
-    if (
-      book.loans.find(
-        (loan) =>
-          loan.status === LoanStatusEnum.ACTIVE ||
-          loan.status === LoanStatusEnum.OVERDUE,
-      )
-    ) {
-      throw new BadRequestException(`Livro já locado`);
-    }
+      this.loanRepository.exists({
+        where: {
+          book: { id: createLoanDTO.bookId },
+          status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
+        },
+      }),
+    ]);
 
-    if (loansByUser[1] > 3) {
-      throw new BadRequestException(`Usuário atingiu o limite de locações`);
-    }
+    if (isBookLoaned) throw new BadRequestException(`Livro já locado`);
+    if (activeLoansCount >= 3)
+      throw new BadRequestException(
+        `Usuário atingiu o número máximo de locações`,
+      );
 
-    const partialLoan = this.buildLoan(user, book);
-    const newLoan = await this.loanRepository.save(partialLoan);
+    const newLoan = await this.loanRepository.save(this.buildLoan(user, book));
 
     return plainToInstance(LoanResponseDTO, newLoan, {
       excludeExtraneousValues: true,
