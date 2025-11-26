@@ -30,28 +30,29 @@ export class LoanService {
 
   async create(createLoanDTO: CreateLoanDTO): Promise<LoanResponseDTO> {
     try {
-      const [user, book, activeLoansCount, isBookLoaned] = await Promise.all([
-        this.userRepository.findOneByOrFail({ id: createLoanDTO.userId }),
+      const [user, book, userActiveLoansCount, isBookLoaned] =
+        await Promise.all([
+          this.userRepository.findOneByOrFail({ id: createLoanDTO.userId }),
 
-        this.bookRepository.findOneByOrFail({ id: createLoanDTO.bookId }),
+          this.bookRepository.findOneByOrFail({ id: createLoanDTO.bookId }),
 
-        this.loanRepository.count({
-          where: {
-            user: { id: createLoanDTO.userId },
-            status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
-          },
-        }),
+          this.loanRepository.count({
+            where: {
+              user: { id: createLoanDTO.userId },
+              status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
+            },
+          }),
 
-        this.loanRepository.exists({
-          where: {
-            book: { id: createLoanDTO.bookId },
-            status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
-          },
-        }),
-      ]);
+          this.loanRepository.exists({
+            where: {
+              book: { id: createLoanDTO.bookId },
+              status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
+            },
+          }),
+        ]);
 
       if (isBookLoaned) throw new BadRequestException(`Livro já locado`);
-      if (activeLoansCount >= 3)
+      if (userActiveLoansCount >= 3)
         throw new BadRequestException(
           `Usuário atingiu o número máximo de locações`,
         );
@@ -60,21 +61,31 @@ export class LoanService {
         this.createLoanEntity(user, book),
       );
 
-      const newLoanDTO = plainToInstance(LoanResponseDTO, newLoan, {
-        excludeExtraneousValues: true,
-      });
-      newLoanDTO.daysLate = calculateDaysLate(
-        newLoanDTO.dueDate,
-        newLoanDTO.returnDate,
-      );
-
-      return newLoanDTO;
+      return this.toResponseDTO(newLoan);
     } catch (error) {
       if (error.name === 'EntityNotFoundError') {
-        throw new NotFoundException(error.message);
+        throw new NotFoundException('Usuário ou Livro não encontrado');
       }
       throw error;
     }
+  }
+
+  async findAll(): Promise<LoanResponseDTO[]> {
+    const loans = await this.loanRepository.find({
+      relations: { user: true, book: true },
+    });
+
+    return loans.map((loan) => this.toResponseDTO(loan));
+  }
+
+  async findById(id: string): Promise<LoanResponseDTO> {
+    const loan = await this.loanRepository.findOne({
+      where: { id },
+      relations: { user: true, book: true },
+    });
+    if (!loan) throw new NotFoundException(`Locação não encontrada`);
+
+    return this.toResponseDTO(loan);
   }
 
   private createLoanEntity(user: User, book: Book): Partial<Loan> {
@@ -84,8 +95,18 @@ export class LoanService {
     return {
       loanDate: new Date(),
       dueDate: loanDueDate,
+      status: LoanStatusEnum.ACTIVE,
       user,
       book,
     };
+  }
+
+  private toResponseDTO(plainLoan: Loan): LoanResponseDTO {
+    const loanDTO = plainToInstance(LoanResponseDTO, plainLoan, {
+      excludeExtraneousValues: true,
+    });
+
+    calculateDaysLate(loanDTO.dueDate, loanDTO.returnDate);
+    return loanDTO;
   }
 }

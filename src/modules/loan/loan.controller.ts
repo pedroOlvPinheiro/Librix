@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { LoanService } from './loan.service';
 import { CreateLoanDTO } from './dto/create-loan.dto';
 import { LoanResponseDTO } from './dto/loan-response.dto';
+import { FindOneParams } from 'src/utils/find-one-params';
 
 @Controller('loan')
 export class LoanController {
@@ -10,5 +11,17 @@ export class LoanController {
   @Post()
   async create(@Body() createLoanDTO: CreateLoanDTO): Promise<LoanResponseDTO> {
     return this.loanService.create(createLoanDTO);
+  }
+
+  @Get()
+  async findAll(): Promise<LoanResponseDTO[]> {
+    return this.loanService.findAll();
+  }
+
+  @Get(':id')
+  async findById(
+    @Param() findOneParams: FindOneParams,
+  ): Promise<LoanResponseDTO> {
+    return this.loanService.findById(findOneParams.id);
   }
 }
