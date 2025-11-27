@@ -18,10 +18,17 @@ export class LoanController {
     return this.loanService.findAll();
   }
 
-  @Get(':id')
-  async findById(
+  @Post('return/:id')
+  async returnBook(
     @Param() findOneParams: FindOneParams,
   ): Promise<LoanResponseDTO> {
-    return this.loanService.findById(findOneParams.id);
+    return this.loanService.returnBook(findOneParams.id);
+  }
+
+  @Get(':id')
+  async findOne(
+    @Param() findOneParams: FindOneParams,
+  ): Promise<LoanResponseDTO> {
+    return this.loanService.findOne(findOneParams.id);
   }
 }

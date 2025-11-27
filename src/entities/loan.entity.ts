@@ -12,6 +12,7 @@ export class Loan extends Content {
   @Column({ nullable: false })
   dueDate: Date;
 
+  //SEMPRE COMEÇA NULL -> É A DATA QUE O USER DEVOLVE O LIVRO
   @Column({ nullable: true })
   returnDate: Date;
 
@@ -22,6 +23,7 @@ export class Loan extends Content {
   })
   status: LoanStatusEnum;
 
+  //COMEÇA 0 E É CALCULADO NOVAMENTE NO DIA DE RETORNO DO LIVRO (RETURNDATE)
   @Column({
     type: 'decimal',
     precision: 10,

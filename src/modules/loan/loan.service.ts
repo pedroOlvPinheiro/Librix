@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -14,6 +13,7 @@ import { LoanResponseDTO } from './dto/loan-response.dto';
 import { LoanStatusEnum } from 'src/utils/enum/loan-status.enum';
 import { plainToInstance } from 'class-transformer';
 import { calculateDaysLate } from 'src/utils/calculate-days-late';
+import { LOAN_CONFIG } from 'src/constants/loan.constants';
 
 @Injectable()
 export class LoanService {
@@ -52,7 +52,7 @@ export class LoanService {
         ]);
 
       if (isBookLoaned) throw new BadRequestException(`Livro já locado`);
-      if (userActiveLoansCount >= 3)
+      if (userActiveLoansCount >= LOAN_CONFIG.MAX_ACTIVE_LOANS)
         throw new BadRequestException(
           `Usuário atingiu o número máximo de locações`,
         );
@@ -78,19 +78,43 @@ export class LoanService {
     return loans.map((loan) => this.toResponseDTO(loan));
   }
 
-  async findById(id: string): Promise<LoanResponseDTO> {
+  async findOne(id: string): Promise<LoanResponseDTO> {
     const loan = await this.loanRepository.findOne({
       where: { id },
       relations: { user: true, book: true },
     });
-    if (!loan) throw new NotFoundException(`Locação não encontrada`);
+    if (!loan) throw new NotFoundException(`Empréstimo não encontrada`);
 
+    return this.toResponseDTO(loan);
+  }
+
+  async returnBook(id: string): Promise<LoanResponseDTO> {
+    const loan = await this.loanRepository.findOne({
+      where: { id },
+      relations: { user: true, book: true },
+    });
+
+    if (!loan) {
+      throw new NotFoundException(`Empréstimo não encontrado`);
+    }
+    if (loan.status === LoanStatusEnum.RETURNED) {
+      throw new BadRequestException(`Empréstimo já devolvido`);
+    }
+
+    loan.returnDate = new Date();
+    loan.fine =
+      calculateDaysLate(loan.dueDate, loan.returnDate) *
+      LOAN_CONFIG.FINE_PER_DAY;
+
+    loan.status = LoanStatusEnum.RETURNED;
+
+    await this.loanRepository.save(loan);
     return this.toResponseDTO(loan);
   }
 
   private createLoanEntity(user: User, book: Book): Partial<Loan> {
     const loanDueDate = new Date();
-    loanDueDate.setDate(loanDueDate.getDate() + 14);
+    loanDueDate.setDate(loanDueDate.getDate() + LOAN_CONFIG.LOAN_DURATION_DAYS);
 
     return {
       loanDate: new Date(),
@@ -105,6 +129,9 @@ export class LoanService {
     const loanDTO = plainToInstance(LoanResponseDTO, plainLoan, {
       excludeExtraneousValues: true,
     });
+
+    loanDTO.userId = plainLoan.user.id;
+    loanDTO.bookId = plainLoan.book.id;
 
     calculateDaysLate(loanDTO.dueDate, loanDTO.returnDate);
     return loanDTO;
