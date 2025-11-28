@@ -112,6 +112,29 @@ export class LoanService {
     return this.toResponseDTO(loan);
   }
 
+  async findActiveByUser(id: string): Promise<LoanResponseDTO[]> {
+    const loans = await this.loanRepository.find({
+      where: {
+        user: { id },
+        status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
+      },
+      order: { dueDate: 'ASC' },
+      relations: { user: true, book: true },
+    });
+
+    return loans.map((loan) => this.toResponseDTO(loan));
+  }
+
+  async findByUser(id: string): Promise<LoanResponseDTO[]> {
+    const loans = await this.loanRepository.find({
+      where: { user: { id } },
+      relations: { user: true, book: true },
+      order: { loanDate: 'DESC' },
+    });
+
+    return loans.map((loan) => this.toResponseDTO(loan));
+  }
+
   private createLoanEntity(user: User, book: Book): Partial<Loan> {
     const loanDueDate = new Date();
     loanDueDate.setDate(loanDueDate.getDate() + LOAN_CONFIG.LOAN_DURATION_DAYS);

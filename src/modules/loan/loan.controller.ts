@@ -25,6 +25,20 @@ export class LoanController {
     return this.loanService.returnBook(findOneParams.id);
   }
 
+  @Get('user/:id/active')
+  async findActiveByUser(
+    @Param() findOneParams: FindOneParams,
+  ): Promise<LoanResponseDTO[]> {
+    return this.loanService.findActiveByUser(findOneParams.id);
+  }
+
+  @Get('user/:id')
+  async findByUser(
+    @Param() findOneParams: FindOneParams,
+  ): Promise<LoanResponseDTO[]> {
+    return this.loanService.findByUser(findOneParams.id);
+  }
+
   @Get(':id')
   async findOne(
     @Param() findOneParams: FindOneParams,
