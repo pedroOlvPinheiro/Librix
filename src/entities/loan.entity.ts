@@ -40,7 +40,13 @@ export class Loan extends Content {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
+  @Column({ type: 'uuid', nullable: false, name: 'user_id' })
+  userId: string;
+
   @ManyToOne(() => Book, (book) => book.loans)
   @JoinColumn({ name: 'book_id' })
   book: Book;
+
+  @Column({ type: 'uuid', nullable: false, name: 'book_id' })
+  bookId: string;
 }
