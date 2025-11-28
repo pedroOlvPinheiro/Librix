@@ -71,28 +71,20 @@ export class LoanService {
   }
 
   async findAll(): Promise<LoanResponseDTO[]> {
-    const loans = await this.loanRepository.find({
-      relations: { user: true, book: true },
-    });
+    const loans = await this.loanRepository.find();
 
     return loans.map((loan) => this.toResponseDTO(loan));
   }
 
   async findOne(id: string): Promise<LoanResponseDTO> {
-    const loan = await this.loanRepository.findOne({
-      where: { id },
-      relations: { user: true, book: true },
-    });
-    if (!loan) throw new NotFoundException(`Empréstimo não encontrada`);
+    const loan = await this.loanRepository.findOneBy({ id });
+    if (!loan) throw new NotFoundException(`Empréstimo não encontrado`);
 
     return this.toResponseDTO(loan);
   }
 
   async returnBook(id: string): Promise<LoanResponseDTO> {
-    const loan = await this.loanRepository.findOne({
-      where: { id },
-      relations: { user: true, book: true },
-    });
+    const loan = await this.loanRepository.findOneBy({ id });
 
     if (!loan) {
       throw new NotFoundException(`Empréstimo não encontrado`);
@@ -119,7 +111,6 @@ export class LoanService {
         status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
       },
       order: { dueDate: 'ASC' },
-      relations: { user: true, book: true },
     });
 
     return loans.map((loan) => this.toResponseDTO(loan));
@@ -128,7 +119,6 @@ export class LoanService {
   async findByUser(id: string): Promise<LoanResponseDTO[]> {
     const loans = await this.loanRepository.find({
       where: { user: { id } },
-      relations: { user: true, book: true },
       order: { loanDate: 'DESC' },
     });
 
@@ -143,8 +133,8 @@ export class LoanService {
       loanDate: new Date(),
       dueDate: loanDueDate,
       status: LoanStatusEnum.ACTIVE,
-      user,
-      book,
+      userId: user.id,
+      bookId: book.id,
     };
   }
 
@@ -153,10 +143,8 @@ export class LoanService {
       excludeExtraneousValues: true,
     });
 
-    loanDTO.userId = plainLoan.user.id;
-    loanDTO.bookId = plainLoan.book.id;
-
     calculateDaysLate(loanDTO.dueDate, loanDTO.returnDate);
+
     return loanDTO;
   }
 }
