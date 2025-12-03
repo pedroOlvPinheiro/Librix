@@ -15,6 +15,8 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { FindOneParams } from 'src/utils/find-one-params';
 import { UserResponseDTO } from './dto/user-response.dto';
+import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
+import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
 
 @Controller('users')
 export class UsersController {
@@ -27,8 +29,10 @@ export class UsersController {
   }
 
   @Get()
-  async findAll(): Promise<UserResponseDTO[]> {
-    return this.usersService.findAll();
+  async findAll(
+    @Query() paginationQueryDTO: PaginationQueryDTO,
+  ): Promise<PaginatedResponseDTO<UserResponseDTO>> {
+    return this.usersService.findAll(paginationQueryDTO);
   }
 
   @Get('search')
