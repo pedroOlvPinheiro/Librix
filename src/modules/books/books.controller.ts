@@ -15,6 +15,8 @@ import { CreateBookDTO } from './dto/create-book.dto';
 import { UpdateBookDTO } from './dto/update-book.dto';
 import { FindOneParams } from 'src/utils/find-one-params';
 import { BookResponseDTO } from './dto/book-response.dto';
+import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
+import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
 
 @Controller('books')
 export class BooksController {
@@ -27,8 +29,10 @@ export class BooksController {
   }
 
   @Get()
-  async findAll(): Promise<BookResponseDTO[]> {
-    return this.booksService.findAll();
+  async findAll(
+    @Query() paginationQueryDTO: PaginationQueryDTO,
+  ): Promise<PaginatedResponseDTO<BookResponseDTO>> {
+    return this.booksService.findAll(paginationQueryDTO);
   }
 
   @Get('search')

@@ -13,7 +13,10 @@ import { LoanResponseDTO } from './dto/loan-response.dto';
 import { LoanStatusEnum } from 'src/utils/enum/loan-status.enum';
 import { plainToInstance } from 'class-transformer';
 import { calculateDaysLate } from 'src/utils/calculate-days-late';
-import { LOAN_CONFIG } from 'src/constants/loan.constants';
+import { LOAN_CONFIG } from 'src/utils/constants/loan.constants';
+import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
+import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
+import { createPaginationMeta } from 'src/utils/pagination.helper';
 
 @Injectable()
 export class LoanService {
@@ -38,14 +41,14 @@ export class LoanService {
 
           this.loanRepository.count({
             where: {
-              user: { id: createLoanDTO.userId },
+              userId: createLoanDTO.userId,
               status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
             },
           }),
 
           this.loanRepository.exists({
             where: {
-              book: { id: createLoanDTO.bookId },
+              bookId: createLoanDTO.bookId,
               status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
             },
           }),
@@ -70,10 +73,22 @@ export class LoanService {
     }
   }
 
-  async findAll(): Promise<LoanResponseDTO[]> {
-    const loans = await this.loanRepository.find();
+  async findAll(
+    paginationQueryDTO: PaginationQueryDTO,
+  ): Promise<PaginatedResponseDTO<LoanResponseDTO>> {
+    const { page, limit } = paginationQueryDTO;
+    const skip = (page - 1) * limit;
 
-    return loans.map((loan) => this.toResponseDTO(loan));
+    const [loans, total] = await this.loanRepository.findAndCount({
+      take: limit,
+      skip,
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      data: loans.map((loan) => this.toResponseDTO(loan)),
+      meta: createPaginationMeta(total, page, limit),
+    };
   }
 
   async findOne(id: string): Promise<LoanResponseDTO> {
@@ -107,7 +122,7 @@ export class LoanService {
   async findActiveByUser(id: string): Promise<LoanResponseDTO[]> {
     const loans = await this.loanRepository.find({
       where: {
-        user: { id },
+        userId: id,
         status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
       },
       order: { dueDate: 'ASC' },
@@ -118,7 +133,7 @@ export class LoanService {
 
   async findByUser(id: string): Promise<LoanResponseDTO[]> {
     const loans = await this.loanRepository.find({
-      where: { user: { id } },
+      where: { userId: id },
       order: { loanDate: 'DESC' },
     });
 
@@ -143,7 +158,7 @@ export class LoanService {
       excludeExtraneousValues: true,
     });
 
-    calculateDaysLate(loanDTO.dueDate, loanDTO.returnDate);
+    loanDTO.daysLate = calculateDaysLate(loanDTO.dueDate, loanDTO.returnDate);
 
     return loanDTO;
   }

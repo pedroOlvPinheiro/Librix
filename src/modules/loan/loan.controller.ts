@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { LoanService } from './loan.service';
 import { CreateLoanDTO } from './dto/create-loan.dto';
 import { LoanResponseDTO } from './dto/loan-response.dto';
 import { FindOneParams } from 'src/utils/find-one-params';
+import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
+import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
 
 @Controller('loan')
 export class LoanController {
@@ -14,8 +16,10 @@ export class LoanController {
   }
 
   @Get()
-  async findAll(): Promise<LoanResponseDTO[]> {
-    return this.loanService.findAll();
+  async findAll(
+    @Query() paginationQueryDTO: PaginationQueryDTO,
+  ): Promise<PaginatedResponseDTO<LoanResponseDTO>> {
+    return this.loanService.findAll(paginationQueryDTO);
   }
 
   @Post('return/:id')

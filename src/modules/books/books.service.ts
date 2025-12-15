@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBookDTO } from './dto/create-book.dto';
 import { UpdateBookDTO } from './dto/update-book.dto';
 import { BookResponseDTO } from './dto/book-response.dto';
@@ -6,6 +10,9 @@ import { plainToInstance } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from 'src/entities/book.entity';
 import { ILike, Repository } from 'typeorm';
+import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
+import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
+import { createPaginationMeta } from 'src/utils/pagination.helper';
 
 @Injectable()
 export class BooksService {
@@ -19,11 +26,26 @@ export class BooksService {
     await this.bookRepository.save(newBook);
   }
 
-  async findAll(): Promise<BookResponseDTO[]> {
-    const books = await this.bookRepository.find();
-    return books.map((book) =>
-      plainToInstance(BookResponseDTO, book, { excludeExtraneousValues: true }),
-    );
+  async findAll(
+    paginationQueryDTO: PaginationQueryDTO,
+  ): Promise<PaginatedResponseDTO<BookResponseDTO>> {
+    const { page, limit } = paginationQueryDTO;
+    const skip = (page - 1) * limit;
+
+    const [books, total] = await this.bookRepository.findAndCount({
+      take: limit,
+      skip,
+      order: { createdAt: 'ASC' },
+    });
+
+    return {
+      data: books.map((book) =>
+        plainToInstance(BookResponseDTO, book, {
+          excludeExtraneousValues: true,
+        }),
+      ),
+      meta: createPaginationMeta(total, page, limit),
+    };
   }
 
   async searchBy(title: string): Promise<BookResponseDTO[]> {
