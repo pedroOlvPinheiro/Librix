@@ -14,6 +14,9 @@ import { LoanStatusEnum } from 'src/utils/enum/loan-status.enum';
 import { plainToInstance } from 'class-transformer';
 import { calculateDaysLate } from 'src/utils/calculate-days-late';
 import { LOAN_CONFIG } from 'src/utils/constants/loan.constants';
+import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
+import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
+import { createPaginationMeta } from 'src/utils/pagination.helper';
 
 @Injectable()
 export class LoanService {
@@ -70,10 +73,22 @@ export class LoanService {
     }
   }
 
-  async findAll(): Promise<LoanResponseDTO[]> {
-    const loans = await this.loanRepository.find();
+  async findAll(
+    paginationQueryDTO: PaginationQueryDTO,
+  ): Promise<PaginatedResponseDTO<LoanResponseDTO>> {
+    const { page, limit } = paginationQueryDTO;
+    const skip = (page - 1) * limit;
 
-    return loans.map((loan) => this.toResponseDTO(loan));
+    const [loans, total] = await this.loanRepository.findAndCount({
+      take: limit,
+      skip,
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      data: loans.map((loan) => this.toResponseDTO(loan)),
+      meta: createPaginationMeta(total, page, limit),
+    };
   }
 
   async findOne(id: string): Promise<LoanResponseDTO> {

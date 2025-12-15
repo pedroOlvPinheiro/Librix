@@ -29,15 +29,14 @@ export class BooksService {
   async findAll(
     paginationQueryDTO: PaginationQueryDTO,
   ): Promise<PaginatedResponseDTO<BookResponseDTO>> {
-    const skip = (paginationQueryDTO.page - 1) * paginationQueryDTO.limit;
+    const { page, limit } = paginationQueryDTO;
+    const skip = (page - 1) * limit;
 
-    const [books, count] = await this.bookRepository.findAndCount({
+    const [books, total] = await this.bookRepository.findAndCount({
+      take: limit,
       skip,
-      take: paginationQueryDTO.limit,
+      order: { createdAt: 'ASC' },
     });
-
-    if (paginationQueryDTO.page > Math.ceil(count / paginationQueryDTO.limit))
-      throw new BadRequestException(`Página inválida`);
 
     return {
       data: books.map((book) =>
@@ -45,11 +44,7 @@ export class BooksService {
           excludeExtraneousValues: true,
         }),
       ),
-      meta: createPaginationMeta(
-        count,
-        paginationQueryDTO.page,
-        paginationQueryDTO.limit,
-      ),
+      meta: createPaginationMeta(total, page, limit),
     };
   }
 

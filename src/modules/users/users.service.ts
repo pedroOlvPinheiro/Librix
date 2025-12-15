@@ -29,23 +29,18 @@ export class UsersService {
   async findAll(
     paginationQueryDTO: PaginationQueryDTO,
   ): Promise<PaginatedResponseDTO<UserResponseDTO>> {
-    const skip = (paginationQueryDTO.page - 1) * paginationQueryDTO.limit;
+    const { page, limit } = paginationQueryDTO;
+    const skip = (page - 1) * limit;
 
-    const [users, count] = await this.userRepository.findAndCount({
+    const [users, total] = await this.userRepository.findAndCount({
+      take: limit,
       skip,
-      take: paginationQueryDTO.limit,
+      order: { createdAt: 'ASC' },
     });
-
-    if (paginationQueryDTO.page > Math.ceil(count / paginationQueryDTO.limit))
-      throw new BadRequestException(`Página inválida`);
 
     return {
       data: users.map((user) => plainToInstance(UserResponseDTO, user)),
-      meta: createPaginationMeta(
-        count,
-        paginationQueryDTO.page,
-        paginationQueryDTO.limit,
-      ),
+      meta: createPaginationMeta(total, page, limit),
     };
   }
 
