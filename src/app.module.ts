@@ -16,7 +16,7 @@ import { LoanModule } from './modules/loan/loan.module';
       password: '32311292',
       database: 'Librix',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+      migrations: [__dirname + '/migrations/**/*{.js,.ts}'],
       logging: false,
     }),
     UsersModule,

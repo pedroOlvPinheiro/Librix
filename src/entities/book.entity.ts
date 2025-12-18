@@ -13,7 +13,7 @@ export class Book extends Content {
   @Column({ nullable: false, type: 'int' })
   publishedYear: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   isbn: string;
 
   @OneToMany(() => Loan, (loans) => loans.book)

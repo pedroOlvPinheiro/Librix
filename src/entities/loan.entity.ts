@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Content } from './content.entity';
 import { LoanStatusEnum } from 'src/utils/enum/loan-status.enum';
 import { User } from './user.entity';
@@ -31,9 +37,9 @@ export class Loan extends Content {
     default: 0,
     nullable: false,
   })
-  fine: Number;
+  fine: number;
 
-  @Column({ nullable: true })
+  @UpdateDateColumn({ nullable: true })
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.loans)

@@ -7,7 +7,7 @@ export class User extends Content {
   @Column({ nullable: false })
   name: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   email: string;
 
   @OneToMany(() => Loan, (loan) => loan.user)
