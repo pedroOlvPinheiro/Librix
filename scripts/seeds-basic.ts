@@ -10,15 +10,12 @@ import { LoanSeeder } from './seeders/loan.seeder';
 async function main() {
   try {
     await AppDataSource.initialize();
-    console.log('📦 Banco de dados conectado!');
 
-    // --- BLOCO DE LIMPEZA ---
-    console.log('🧹 Limpando dados existentes...');
-    // Ordem recomendada: limpe as tabelas que possuem FKs primeiro ou use CASCADE
+    console.log('Limpando dados existentes');
     await AppDataSource.query(
       'TRUNCATE TABLE "loan", "book", "user" RESTART IDENTITY CASCADE',
     );
-    console.log('✅ Banco limpo com sucesso!');
+    console.log('Banco limpo com sucesso!');
 
     const userRepository = AppDataSource.getRepository(User);
     const bookRepository = AppDataSource.getRepository(Book);
