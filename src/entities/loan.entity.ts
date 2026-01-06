@@ -12,17 +12,18 @@ import { Book } from './book.entity';
 
 @Entity('loan')
 export class Loan extends Content {
-  @Column({ nullable: false })
+  @Column({ type: 'timestamp', nullable: false })
   loanDate: Date;
 
-  @Column({ nullable: false })
+  @Column({ type: 'timestamp', nullable: false })
   dueDate: Date;
 
   //SEMPRE COMEÇA NULL -> É A DATA QUE O USER DEVOLVE O LIVRO
-  @Column({ nullable: true })
-  returnDate: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  returnDate: Date | null;
 
   @Column({
+    type: 'enum',
     nullable: false,
     enum: LoanStatusEnum,
     default: LoanStatusEnum.ACTIVE,
@@ -39,7 +40,7 @@ export class Loan extends Content {
   })
   fine: number;
 
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamp', nullable: true })
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.loans)

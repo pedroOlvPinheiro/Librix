@@ -23,11 +23,13 @@
     "migration:create": "npm run typeorm -- migration:create src/migrations -d src/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/data-source.ts",
-    "seed": "ts-node -r tsconfig-paths/register scripts/seed-basic.ts",
-    "seed:refresh": "npm run migration:revert && npm run migration:run && npm run seed"
+    "migration:show": "npm run typeorm migration:show -- -d ./src/data-source.ts",
+    "seeds": "tsx -r tsconfig-paths/register scripts/seeds-basic.ts",
+    "seeds:refresh": "npm run migration:revert && npm run migration:run && npm run seed"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
@@ -44,6 +46,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
+    "@faker-js/faker": "^10.1.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
@@ -67,6 +70,7 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },

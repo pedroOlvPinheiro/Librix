@@ -1,36 +1,30 @@
 import { Book } from 'src/entities/book.entity';
 import { Repository } from 'typeorm';
+import { fakerPT_BR as faker } from '@faker-js/faker';
 
 export class BookSeeder {
   constructor(private readonly bookRepository: Repository<Book>) {}
 
   async seed(): Promise<Book[]> {
-    const bookData = [
-      {
-        title: 'Clean Code',
-        author: 'Robert C. Martin',
-        publishedYear: 2008,
-        isbn: '9780132350884',
-      },
-      {
-        title: 'Domain-Driven Design',
-        author: 'Eric Evans',
-        publishedYear: 2003,
-        isbn: '9780321125217',
-      },
-      {
-        title: 'Arquitetura Limpa',
-        author: 'Robert C. Martin',
-        publishedYear: 2017,
-        isbn: '9788550804606',
-      },
-      {
-        title: 'O Programador Pragmático',
-        author: 'Andrew Hunt e David Thomas',
-        publishedYear: 1999,
-        isbn: '9788577807007',
-      },
-    ];
+    const bookData: Partial<Book>[] = [];
+    const validIsbn: string[] = [];
+
+    for (let i = 0; i < 10; i++) {
+      const newBook: Partial<Book> = {
+        title: faker.book.title(),
+        author: faker.book.author(),
+        publishedYear: new Date(
+          faker.date.past({ refDate: new Date(), years: 100 }),
+        ).getDate(),
+        isbn: faker.string.numeric({
+          length: 13,
+          exclude: validIsbn,
+        }),
+      };
+
+      validIsbn.push(String(newBook.isbn));
+      bookData.push(newBook);
+    }
 
     const books = this.bookRepository.create(bookData);
     await this.bookRepository.save(books);
