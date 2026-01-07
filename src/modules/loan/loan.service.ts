@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from 'src/entities/book.entity';
 import { Loan } from 'src/entities/loan.entity';
 import { User } from 'src/entities/user.entity';
-import { In, Not, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateLoanDTO } from './dto/create-loan.dto';
 import { LoanResponseDTO } from './dto/loan-response.dto';
 import { LoanStatusEnum } from 'src/utils/enum/loan-status.enum';
