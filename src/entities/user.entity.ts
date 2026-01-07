@@ -4,10 +4,10 @@ import { Loan } from './loan.entity';
 
 @Entity('user')
 export class User extends Content {
-  @Column({ nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   name: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'varchar', nullable: false, unique: true })
   email: string;
 
   @OneToMany(() => Loan, (loan) => loan.user)
