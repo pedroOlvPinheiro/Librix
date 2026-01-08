@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Loan } from 'src/entities/loan.entity';
 import { User } from 'src/entities/user.entity';
 import { Book } from 'src/entities/book.entity';
+import { LoanCronService } from './loan.cron.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Loan, User, Book])],
   controllers: [LoanController],
-  providers: [LoanService],
+  providers: [LoanService, LoanCronService],
 })
 export class LoanModule {}

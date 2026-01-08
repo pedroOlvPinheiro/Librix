@@ -6,6 +6,7 @@ import { BooksModule } from './modules/books/books.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoanModule } from './modules/loan/loan.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -19,8 +20,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DATABASE'),
+        autoLoadEntities: true,
       }),
     }),
+    ScheduleModule.forRoot(),
     UsersModule,
     BooksModule,
     LoanModule,

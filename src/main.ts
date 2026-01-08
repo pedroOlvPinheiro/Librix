@@ -5,7 +5,7 @@ import chalk from 'chalk';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn'],
+    logger: ['error', 'warn', 'log'],
   });
   app.useGlobalPipes(
     new ValidationPipe({
