@@ -20,6 +20,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DATABASE'),
+        autoLoadEntities: true,
       }),
     }),
     ScheduleModule.forRoot(),
