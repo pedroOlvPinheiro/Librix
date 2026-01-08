@@ -14,7 +14,7 @@ export class LoanCronService {
 
   private readonly logger = new Logger(LoanCronService.name);
 
-  @Cron('*/10 * * * * *')
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   public async setToLateRental() {
     const todayDate = new Date();
     this.logger.log(
