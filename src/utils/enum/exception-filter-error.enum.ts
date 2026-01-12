@@ -1,0 +1,4 @@
+export enum ExceptionFilterErrorEnum {
+  REQUEST_ERROR = 'REQUEST_ERROR',
+  DATABASE_OR_INTERNAL_ERROR = 'DATABASE_OR_INTERNAL_ERROR',
+}

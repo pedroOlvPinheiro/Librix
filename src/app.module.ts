@@ -8,7 +8,7 @@ import { LoanModule } from './modules/loan/loan.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { APP_FILTER } from '@nestjs/core';
-import { HttpExceptionFilter } from './common/exception-filter/http-exception.filter';
+import { AllExceptionFilter } from './common/exception-filter/all-exception.filter';
 
 @Module({
   imports: [
@@ -36,7 +36,7 @@ import { HttpExceptionFilter } from './common/exception-filter/http-exception.fi
     AppService,
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
+      useClass: AllExceptionFilter,
     },
   ],
 })
