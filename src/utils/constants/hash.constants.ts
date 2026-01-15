@@ -1,1 +1,2 @@
-export const HASH_SALT = 10;
+export const HASH_SALT = 1;
+export const USER_SEEDER_PASSWORD = 'userseeder';

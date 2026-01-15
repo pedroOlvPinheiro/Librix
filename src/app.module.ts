@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './common/exception-filter/all-exception.filter';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AllExceptionFilter } from './common/exception-filter/all-exception.filt
     UsersModule,
     BooksModule,
     LoanModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

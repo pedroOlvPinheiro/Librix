@@ -10,7 +10,7 @@ export class Auth extends Content {
   @Column({ type: 'varchar', nullable: false })
   password: string;
 
-  @OneToOne(() => Auth)
+  @OneToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;
 }
