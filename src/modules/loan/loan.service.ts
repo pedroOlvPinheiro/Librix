@@ -31,17 +31,20 @@ export class LoanService {
     private readonly bookRepository: Repository<Book>,
   ) {}
 
-  async create(createLoanDTO: CreateLoanDTO): Promise<LoanResponseDTO> {
+  async create(
+    createLoanDTO: CreateLoanDTO,
+    id: string,
+  ): Promise<LoanResponseDTO> {
     try {
       const [user, book, userActiveLoansCount, isBookLoaned] =
         await Promise.all([
-          this.userRepository.findOneByOrFail({ id: createLoanDTO.userId }),
+          this.userRepository.findOneByOrFail({ id }),
 
           this.bookRepository.findOneByOrFail({ id: createLoanDTO.bookId }),
 
           this.loanRepository.count({
             where: {
-              userId: createLoanDTO.userId,
+              userId: id,
               status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
             },
           }),
