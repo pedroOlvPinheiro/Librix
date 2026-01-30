@@ -7,8 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoanModule } from './modules/loan/loan.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AllExceptionFilter } from './common/exception-filter/all-exception.filter';
+import { AuthModule } from './modules/auth/auth.module';
+import { AuthGuard } from './modules/auth/guard/auth.guard';
 
 @Module({
   imports: [
@@ -30,10 +32,15 @@ import { AllExceptionFilter } from './common/exception-filter/all-exception.filt
     UsersModule,
     BooksModule,
     LoanModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     {
       provide: APP_FILTER,
       useClass: AllExceptionFilter,

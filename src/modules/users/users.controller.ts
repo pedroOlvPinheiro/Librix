@@ -7,11 +7,9 @@ import {
   HttpStatus,
   Param,
   Patch,
-  Post,
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { FindOneParams } from 'src/utils/find-one-params';
 import { UserResponseDTO } from './dto/user-response.dto';
@@ -21,12 +19,6 @@ import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  async create(@Body() user: CreateUserDTO): Promise<void> {
-    await this.usersService.create(user);
-  }
 
   @Get()
   async findAll(
