@@ -1,12 +1,13 @@
 import { IsNotEmpty, IsString, IsInt, Min, Max } from 'class-validator';
+import { DecoratorMessage } from 'src/utils/decorator-message';
 
 export class CreateBookDTO {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: DecoratorMessage('title') })
   title: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: DecoratorMessage('author') })
   author: string;
 
   @IsInt()
@@ -19,6 +20,6 @@ export class CreateBookDTO {
   publishedYear: number;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: DecoratorMessage('isbn') })
   isbn: string;
 }

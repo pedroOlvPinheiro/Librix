@@ -1,12 +1,13 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { DecoratorMessage } from 'src/utils/decorator-message';
 
 export class UserAuthDTO {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: DecoratorMessage('email') })
   @IsString()
   @IsEmail()
   email: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: DecoratorMessage('pasword') })
   @IsString()
   password: string;
 }

@@ -15,12 +15,17 @@ export class UserSeeder {
   ) {}
 
   async seed(): Promise<User[]> {
-    const userData: Partial<User>[] = [];
-    const authData: Auth[] = [];
+    const userData: User[] = [];
+    const authData: Partial<Auth>[] = [];
     const password = await bcrypt.hash(USER_SEEDER_PASSWORD, HASH_SALT);
 
     for (let i = 0; i < 10; i++) {
       const name = faker.helpers.slugify(faker.person.fullName());
+
+      const newUser: Partial<User> = {
+        name,
+      };
+      const user = this.userRepository.create(newUser);
 
       const partialAuth: Partial<Auth> = {
         email: faker.internet.email({
@@ -28,22 +33,17 @@ export class UserSeeder {
           allowSpecialCharacters: false,
         }),
         password,
+        user,
       };
 
-      const auth = this.authRepository.create(partialAuth);
-
-      const newUser: Partial<User> = {
-        name,
-        auth,
-      };
-      authData.push(auth);
-      userData.push(newUser);
+      authData.push(partialAuth);
+      userData.push(user);
     }
 
-    const users = this.userRepository.create(userData);
-    await this.userRepository.save(users);
-    await this.authRepository.save(authData);
+    await this.userRepository.save(userData);
+    const auth = this.authRepository.create(authData);
+    await this.authRepository.save(auth);
 
-    return users;
+    return userData;
   }
 }

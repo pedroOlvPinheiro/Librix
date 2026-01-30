@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateUserDTO } from './dto/create-user.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { UserResponseDTO } from './dto/user-response.dto';
 import { plainToInstance } from 'class-transformer';
@@ -20,11 +15,6 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
-
-  async create(user: CreateUserDTO): Promise<void> {
-    const newUser = this.userRepository.create(user);
-    await this.userRepository.save(newUser);
-  }
 
   async findAll(
     paginationQueryDTO: PaginationQueryDTO,
