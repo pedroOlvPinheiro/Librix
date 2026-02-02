@@ -25,13 +25,13 @@ export class AuthService {
   ) {}
 
   async signIn(userAuthDTO: UserAuthDTO) {
-    const user = await this.authRepository.findOne({
+    const auth = await this.authRepository.findOne({
       where: { email: userAuthDTO.email },
       relations: { user: true },
     });
     if (
-      !user ||
-      !(await bcrypt.compare(userAuthDTO.password, user?.password))
+      !auth ||
+      !(await bcrypt.compare(userAuthDTO.password, auth?.password))
     ) {
       throw new UnauthorizedException(
         `Login ou senha incorreto ou usuário não existe`,
@@ -39,8 +39,8 @@ export class AuthService {
     }
     return {
       access_token: await this.jwtService.signAsync({
-        sub: user.id,
-        username: user.user.name,
+        sub: auth.user.id,
+        username: auth.user.name,
       }),
     };
   }

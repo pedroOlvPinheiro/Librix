@@ -5,14 +5,19 @@ import { LoanResponseDTO } from './dto/loan-response.dto';
 import { FindOneParams } from 'src/utils/find-one-params';
 import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
 import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
+import { User } from 'src/common/decorator/user.decorator';
+import { UserPaginationQueryDTO } from 'src/common/dto/user-pagination.query.dto';
 
 @Controller('loan')
 export class LoanController {
   constructor(private readonly loanService: LoanService) {}
 
   @Post()
-  async create(@Body() createLoanDTO: CreateLoanDTO): Promise<LoanResponseDTO> {
-    return this.loanService.create(createLoanDTO);
+  async create(
+    @Body() createLoanDTO: CreateLoanDTO,
+    @User('sub') id: string,
+  ): Promise<LoanResponseDTO> {
+    return this.loanService.create(createLoanDTO, id);
   }
 
   @Get()
@@ -22,11 +27,20 @@ export class LoanController {
     return this.loanService.findAll(paginationQueryDTO);
   }
 
+  @Get('get-my-loans')
+  async getMyLoans(
+    @User('sub') id: string,
+    @Query() userPaginationQueryDTO: UserPaginationQueryDTO,
+  ): Promise<PaginatedResponseDTO<LoanResponseDTO>> {
+    return this.loanService.getMyLoans(id, userPaginationQueryDTO);
+  }
+
   @Post('return/:id')
-  async returnBook(
+  async returnLoan(
     @Param() findOneParams: FindOneParams,
+    @User('sub') id: string,
   ): Promise<LoanResponseDTO> {
-    return this.loanService.returnBook(findOneParams.id);
+    return this.loanService.returnLoan(findOneParams.id, id);
   }
 
   @Get('user/:id/active')

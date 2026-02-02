@@ -17,6 +17,7 @@ import { LOAN_CONFIG } from 'src/utils/constants/loan.constants';
 import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
 import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
 import { createPaginationMeta } from 'src/utils/pagination.helper';
+import { UserPaginationQueryDTO } from 'src/common/dto/user-pagination.query.dto';
 
 @Injectable()
 export class LoanService {
@@ -31,17 +32,20 @@ export class LoanService {
     private readonly bookRepository: Repository<Book>,
   ) {}
 
-  async create(createLoanDTO: CreateLoanDTO): Promise<LoanResponseDTO> {
+  async create(
+    createLoanDTO: CreateLoanDTO,
+    id: string,
+  ): Promise<LoanResponseDTO> {
     try {
       const [user, book, userActiveLoansCount, isBookLoaned] =
         await Promise.all([
-          this.userRepository.findOneByOrFail({ id: createLoanDTO.userId }),
+          this.userRepository.findOneByOrFail({ id }),
 
           this.bookRepository.findOneByOrFail({ id: createLoanDTO.bookId }),
 
           this.loanRepository.count({
             where: {
-              userId: createLoanDTO.userId,
+              userId: id,
               status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
             },
           }),
@@ -98,14 +102,44 @@ export class LoanService {
     return this.toResponseDTO(loan);
   }
 
-  async returnBook(id: string): Promise<LoanResponseDTO> {
-    const loan = await this.loanRepository.findOneBy({ id });
+  async getMyLoans(
+    id: string,
+    userPaginationQueryDTO: UserPaginationQueryDTO,
+  ): Promise<PaginatedResponseDTO<LoanResponseDTO>> {
+    const { page, limit, status } = userPaginationQueryDTO;
+    const skip = (page - 1) * limit;
+    const where: any = { userId: id };
+
+    if (status) {
+      where.status = status;
+    }
+
+    const [loans, total] = await this.loanRepository.findAndCount({
+      take: limit,
+      skip,
+      order: { createdAt: 'DESC' },
+      where,
+    });
+
+    return {
+      data: loans.map((loan) => this.toResponseDTO(loan)),
+      meta: createPaginationMeta(total, page, limit),
+    };
+  }
+
+  async returnLoan(loanId: string, userId: string): Promise<LoanResponseDTO> {
+    const loan = await this.loanRepository.findOne({
+      where: {
+        id: loanId,
+        userId,
+        status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
+      },
+    });
 
     if (!loan) {
-      throw new NotFoundException(`Empréstimo não encontrado`);
-    }
-    if (loan.status === LoanStatusEnum.RETURNED) {
-      throw new BadRequestException(`Empréstimo já devolvido`);
+      throw new NotFoundException(
+        `Empréstimo não encontrado ou livro já devolvido`,
+      );
     }
 
     loan.returnDate = new Date();
