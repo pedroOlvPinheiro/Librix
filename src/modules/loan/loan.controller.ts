@@ -7,6 +7,8 @@ import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
 import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
 import { User } from 'src/common/decorator/user.decorator';
 import { UserPaginationQueryDTO } from 'src/common/dto/user-pagination.query.dto';
+import { RoleEnum } from 'src/utils/enum/role.enum';
+import { Role } from 'src/common/decorator/role.decorator';
 
 @Controller('loan')
 export class LoanController {
@@ -21,6 +23,7 @@ export class LoanController {
   }
 
   @Get()
+  @Role(RoleEnum.ADMIN)
   async findAll(
     @Query() paginationQueryDTO: PaginationQueryDTO,
   ): Promise<PaginatedResponseDTO<LoanResponseDTO>> {
