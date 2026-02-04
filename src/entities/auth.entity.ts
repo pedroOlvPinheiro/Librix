@@ -7,7 +7,7 @@ export class Auth extends Content {
   @Column({ type: 'varchar', nullable: false, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', nullable: false, unique: true })
+  @Column({ type: 'varchar', nullable: false })
   password: string;
 
   @OneToOne(() => User)

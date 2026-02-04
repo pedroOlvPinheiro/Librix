@@ -9,7 +9,12 @@ export class User extends Content {
   @Column({ type: 'varchar', nullable: false })
   name: string;
 
-  @Column({ type: 'enum', nullable: false, default: RoleEnum.USER })
+  @Column({
+    type: 'enum',
+    enum: RoleEnum,
+    nullable: false,
+    default: RoleEnum.USER,
+  })
   role: RoleEnum;
 
   @OneToMany(() => Loan, (loan) => loan.user)
