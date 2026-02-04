@@ -15,6 +15,7 @@ export class LoanController {
   constructor(private readonly loanService: LoanService) {}
 
   @Post()
+  @Role(RoleEnum.USER)
   async create(
     @Body() createLoanDTO: CreateLoanDTO,
     @User('sub') id: string,
@@ -31,6 +32,7 @@ export class LoanController {
   }
 
   @Get('get-my-loans')
+  @Role(RoleEnum.USER)
   async getMyLoans(
     @User('sub') id: string,
     @Query() userPaginationQueryDTO: UserPaginationQueryDTO,
@@ -39,6 +41,7 @@ export class LoanController {
   }
 
   @Post('return/:id')
+  @Role(RoleEnum.USER)
   async returnLoan(
     @Param() findOneParams: FindOneParams,
     @User('sub') id: string,
@@ -47,6 +50,7 @@ export class LoanController {
   }
 
   @Get('user/:id/active')
+  @Role(RoleEnum.ADMIN)
   async findActiveByUser(
     @Param() findOneParams: FindOneParams,
   ): Promise<LoanResponseDTO[]> {
@@ -54,6 +58,7 @@ export class LoanController {
   }
 
   @Get('user/:id')
+  @Role(RoleEnum.ADMIN)
   async findByUser(
     @Param() findOneParams: FindOneParams,
   ): Promise<LoanResponseDTO[]> {
@@ -61,6 +66,7 @@ export class LoanController {
   }
 
   @Get(':id')
+  @Role(RoleEnum.ADMIN)
   async findOne(
     @Param() findOneParams: FindOneParams,
   ): Promise<LoanResponseDTO> {
