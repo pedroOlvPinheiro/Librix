@@ -11,6 +11,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AllExceptionFilter } from './common/exception-filter/all-exception.filter';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthGuard } from './modules/auth/guard/auth.guard';
+import { RoleGuard } from './common/guard/role.guard';
 
 @Module({
   imports: [
@@ -40,6 +41,10 @@ import { AuthGuard } from './modules/auth/guard/auth.guard';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
     },
     {
       provide: APP_FILTER,

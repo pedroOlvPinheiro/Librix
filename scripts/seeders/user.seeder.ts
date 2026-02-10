@@ -7,6 +7,7 @@ import {
   USER_SEEDER_PASSWORD,
 } from 'src/utils/constants/hash.constants';
 import * as bcrypt from 'bcrypt';
+import { RoleEnum } from 'src/utils/enum/role.enum';
 
 export class UserSeeder {
   constructor(
@@ -25,6 +26,9 @@ export class UserSeeder {
       const newUser: Partial<User> = {
         name,
       };
+
+      if (i === 0) newUser.role = RoleEnum.ADMIN;
+
       const user = this.userRepository.create(newUser);
 
       const partialAuth: Partial<Auth> = {

@@ -15,7 +15,10 @@ import { FindOneParams } from 'src/utils/find-one-params';
 import { UserResponseDTO } from './dto/user-response.dto';
 import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
 import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
+import { RoleEnum } from 'src/utils/enum/role.enum';
+import { Role } from 'src/common/decorator/role.decorator';
 
+@Role(RoleEnum.ADMIN)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
