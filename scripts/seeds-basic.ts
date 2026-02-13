@@ -16,7 +16,7 @@ async function main() {
 
     console.log('Limpando dados existentes');
     await AppDataSource.query(
-      'TRUNCATE TABLE "loan", "book", "user", "auth", "author", "author_book", RESTART IDENTITY CASCADE',
+      'TRUNCATE TABLE "loan", "book", "user", "auth", "author", "author_book" RESTART IDENTITY CASCADE',
     );
     console.log('Banco limpo com sucesso!');
 

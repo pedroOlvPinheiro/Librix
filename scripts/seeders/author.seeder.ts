@@ -11,8 +11,8 @@ export class AuthorSeeder {
     const refDate = new Date().setFullYear(2003);
 
     for (let i = 0; i < 10; i++) {
-      const fromBoundaryDate = faker.date.past({ refDate, years: 50 });
-      const toBoundaryDate = faker.date.past({ refDate, years: 50 });
+      const [fromBoundaryDate, toBoundaryDate] =
+        this.defineFromToDates(refDate);
 
       const partialAuthor: Partial<Author> = {
         name: faker.person.fullName(),
@@ -29,5 +29,12 @@ export class AuthorSeeder {
 
     await this.authorRepository.save(authors);
     return authors;
+  }
+
+  private defineFromToDates(refDate: number): Date[] {
+    const date1 = faker.date.past({ refDate, years: 50 });
+    const date2 = faker.date.past({ refDate, years: 50 });
+
+    return [date1, date2].sort((a, b) => a.getTime() - b.getTime());
   }
 }
