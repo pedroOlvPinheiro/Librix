@@ -13,6 +13,6 @@ export class Author extends Content {
   @Column({ type: 'date', nullable: true, default: null })
   birthDate?: Date;
 
-  @ManyToMany(() => Book, (book) => book.authors)
-  books: Book[];
+  @ManyToMany(() => Book, (book) => book.authors, { nullable: true })
+  books?: Book[];
 }

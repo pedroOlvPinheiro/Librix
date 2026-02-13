@@ -19,7 +19,7 @@ export class LoanSeeder {
     for (const user of this.users) {
       const quantity = faker.number.int({ min: 0, max: 3 });
 
-      if (quantity === 0) continue; //se a quantidade for igual a 0, o usuário não tem locações pra fazer, por isso vamos pular para a próxima iteração
+      if (quantity === 0) continue;
 
       for (let i = 0; i < quantity; i++) {
         const status = faker.helpers.arrayElement([
