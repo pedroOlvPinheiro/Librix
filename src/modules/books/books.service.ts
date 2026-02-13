@@ -9,20 +9,33 @@ import { BookResponseDTO } from './dto/book-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from 'src/entities/book.entity';
-import { ILike, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
 import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
 import { createPaginationMeta } from 'src/utils/pagination.helper';
+import { Author } from 'src/entities/author.entity';
 
 @Injectable()
 export class BooksService {
   constructor(
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
+    private readonly authorRepository: Repository<Author>,
   ) {}
 
   async create(book: CreateBookDTO): Promise<void> {
-    const newBook = this.bookRepository.create(book);
+    const authors = await this.authorRepository.findBy({
+      id: In(book.authorsIds),
+    });
+
+    if (authors.length !== book.authorsIds.length)
+      throw new NotFoundException(`Um ou mais autores não encontrados`);
+
+    const newBook = this.bookRepository.create({
+      ...book,
+      authors,
+    });
+
     await this.bookRepository.save(newBook);
   }
 
