@@ -119,4 +119,10 @@ export class BooksService {
 
     if (affected === 0) throw new NotFoundException(`Livro não encontrado`);
   }
+
+  async restore(id: string): Promise<void> {
+    const { affected } = await this.bookRepository.restore({ id });
+
+    if (!affected) throw new NotFoundException(`Livro não encontrado`);
+  }
 }

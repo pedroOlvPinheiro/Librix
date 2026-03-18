@@ -35,6 +35,12 @@ export class UsersController {
     return this.usersService.searchBy(name, email);
   }
 
+  @Patch('restore/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async restore(@Param() param: FindOneParams): Promise<void> {
+    await this.usersService.restore(param.id);
+  }
+
   @Get(':id')
   async findOne(
     @Param() findOneParams: FindOneParams,
