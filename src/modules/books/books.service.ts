@@ -115,7 +115,7 @@ export class BooksService {
   }
 
   async delete(id: string): Promise<void> {
-    const { affected } = await this.bookRepository.delete({ id });
+    const { affected } = await this.bookRepository.softDelete({ id });
 
     if (affected === 0) throw new NotFoundException(`Livro não encontrado`);
   }
