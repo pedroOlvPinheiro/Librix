@@ -18,7 +18,7 @@ export class Book extends Content {
   loans: Loan[];
 
   @ManyToMany(() => Author, (author) => author.books, {
-    onDelete: 'RESTRICT',
+    onDelete: 'CASCADE',
   })
   @JoinTable({
     name: 'author_book',
