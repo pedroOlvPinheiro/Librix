@@ -1,25 +1,34 @@
 import { Book } from 'src/entities/book.entity';
 import { Repository } from 'typeorm';
 import { fakerPT_BR as faker } from '@faker-js/faker';
+import { Author } from 'src/entities/author.entity';
 
 export class BookSeeder {
-  constructor(private readonly bookRepository: Repository<Book>) {}
+  constructor(
+    private readonly bookRepository: Repository<Book>,
+    private readonly authors: Author[],
+  ) {}
 
   async seed(): Promise<Book[]> {
     const bookData: Partial<Book>[] = [];
     const validIsbn: string[] = [];
 
     for (let i = 0; i < 10; i++) {
+      const selectedAuthors = faker.helpers.arrayElements(this.authors, {
+        min: 1,
+        max: 2,
+      });
+
       const newBook: Partial<Book> = {
         title: faker.book.title(),
-        author: faker.book.author(),
         publishedYear: new Date(
           faker.date.past({ refDate: new Date(), years: 100 }),
-        ).getDate(),
+        ).getFullYear(),
         isbn: faker.string.numeric({
           length: 13,
           exclude: validIsbn,
         }),
+        authors: selectedAuthors,
       };
 
       validIsbn.push(String(newBook.isbn));

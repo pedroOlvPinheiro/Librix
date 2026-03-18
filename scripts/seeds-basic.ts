@@ -7,6 +7,8 @@ import { UserSeeder } from './seeders/user.seeder';
 import { Loan } from 'src/entities/loan.entity';
 import { LoanSeeder } from './seeders/loan.seeder';
 import { Auth } from 'src/entities/auth.entity';
+import { Author } from 'src/entities/author.entity';
+import { AuthorSeeder } from './seeders/author.seeder';
 
 async function main() {
   try {
@@ -14,7 +16,7 @@ async function main() {
 
     console.log('Limpando dados existentes');
     await AppDataSource.query(
-      'TRUNCATE TABLE "loan", "book", "user", "auth" RESTART IDENTITY CASCADE',
+      'TRUNCATE TABLE "loan", "book", "user", "auth", "author", "author_book" RESTART IDENTITY CASCADE',
     );
     console.log('Banco limpo com sucesso!');
 
@@ -22,9 +24,14 @@ async function main() {
     const bookRepository = AppDataSource.getRepository(Book);
     const loanRepository = AppDataSource.getRepository(Loan);
     const authRepository = AppDataSource.getRepository(Auth);
+    const authorRepository = AppDataSource.getRepository(Author);
 
     const userSeeder = new UserSeeder(userRepository, authRepository);
-    const bookSeeder = new BookSeeder(bookRepository);
+    const authorSeeder = new AuthorSeeder(authorRepository);
+    const bookSeeder = new BookSeeder(
+      bookRepository,
+      await authorSeeder.seed(),
+    );
     const loanSeeder = new LoanSeeder(
       loanRepository,
       await userSeeder.seed(),

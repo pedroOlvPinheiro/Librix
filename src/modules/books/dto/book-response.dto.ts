@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
 export class BookResponseDTO {
   @Expose()
@@ -8,7 +8,10 @@ export class BookResponseDTO {
   title: string;
 
   @Expose()
-  author: string;
+  @Transform(({ obj }) => {
+    return obj.authors?.map((author) => author.name);
+  })
+  authors: string[];
 
   @Expose()
   publishedYear: number;
