@@ -45,6 +45,13 @@ export class BooksController {
     return this.booksService.searchBy(title);
   }
 
+  @Patch('restore/:id')
+  @Role(RoleEnum.ADMIN)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async restore(@Param() param: FindOneParams) {
+    await this.booksService.restore(param.id);
+  }
+
   @Get(':id')
   @Role(RoleEnum.USER)
   async findOne(
