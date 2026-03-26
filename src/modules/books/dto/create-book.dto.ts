@@ -6,6 +6,8 @@ import {
   Max,
   IsArray,
   IsUUID,
+  IsNumber,
+  IsOptional,
 } from 'class-validator';
 import { DecoratorMessage } from 'src/utils/decorator-message';
 
@@ -26,6 +28,10 @@ export class CreateBookDTO {
   @IsString()
   @IsNotEmpty({ message: DecoratorMessage('isbn') })
   isbn: string;
+
+  @IsNumber()
+  @IsOptional()
+  quantity?: number;
 
   @IsArray()
   @IsString({ each: true })
