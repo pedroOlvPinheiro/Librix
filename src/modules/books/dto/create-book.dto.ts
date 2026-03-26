@@ -29,7 +29,8 @@ export class CreateBookDTO {
   @IsNotEmpty({ message: DecoratorMessage('isbn') })
   isbn: string;
 
-  @IsNumber()
+  @IsInt({ message: 'A quantidade deve ser um número inteiro' })
+  @Min(0, { message: 'A quantidade não pode ser negativa' })
   @IsOptional()
   quantity?: number;
 

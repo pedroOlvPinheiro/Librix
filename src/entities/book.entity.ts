@@ -14,8 +14,8 @@ export class Book extends Content {
   @Column({ type: 'varchar', nullable: false, unique: true })
   isbn: string;
 
-  @Column({ type: 'numeric', default: 0, nullable: false })
-  quantity?: number;
+  @Column({ type: 'integer', default: 0, nullable: false })
+  quantity: number;
 
   @OneToMany(() => Loan, (loans) => loans.book)
   loans: Loan[];
