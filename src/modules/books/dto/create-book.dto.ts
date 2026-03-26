@@ -6,6 +6,8 @@ import {
   Max,
   IsArray,
   IsUUID,
+  IsNumber,
+  IsOptional,
 } from 'class-validator';
 import { DecoratorMessage } from 'src/utils/decorator-message';
 
@@ -26,6 +28,11 @@ export class CreateBookDTO {
   @IsString()
   @IsNotEmpty({ message: DecoratorMessage('isbn') })
   isbn: string;
+
+  @IsInt({ message: 'A quantidade deve ser um número inteiro' })
+  @Min(0, { message: 'A quantidade não pode ser negativa' })
+  @IsOptional()
+  quantity?: number;
 
   @IsArray()
   @IsString({ each: true })
