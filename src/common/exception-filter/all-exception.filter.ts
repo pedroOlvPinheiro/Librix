@@ -47,12 +47,12 @@ export class AllExceptionFilter implements ExceptionFilter {
     response.status(status).json(errorResponse);
   }
 
-  private extractMessage(response: string | object): string {
+  private extractMessage(response: string | object): string | string[] {
     if (typeof response === 'object' && response != null) {
-      return (response as any).message || JSON.stringify(response);
+      return (response as { message: string | string[] }).message;
     }
 
-    return response;
+    return response as string | string[];
   }
 
   private handleLogging(exception: unknown, request: Request, status: number) {
