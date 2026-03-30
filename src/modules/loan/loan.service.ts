@@ -37,7 +37,7 @@ export class LoanService {
     id: string,
   ): Promise<LoanResponseDTO> {
     try {
-      const [user, book, userActiveLoansCount, isBookLoaned] =
+      const [user, book, userActiveLoansCount, loanedQuantity] =
         await Promise.all([
           this.userRepository.findOneByOrFail({ id }),
 
@@ -50,7 +50,7 @@ export class LoanService {
             },
           }),
 
-          this.loanRepository.exists({
+          this.loanRepository.count({
             where: {
               bookId: createLoanDTO.bookId,
               status: In([LoanStatusEnum.ACTIVE, LoanStatusEnum.OVERDUE]),
@@ -58,7 +58,9 @@ export class LoanService {
           }),
         ]);
 
-      if (isBookLoaned) throw new BadRequestException(`Livro já locado`);
+      if (loanedQuantity >= book.quantity)
+        throw new BadRequestException(`Todas as cópias foram locadas`);
+
       if (userActiveLoansCount >= LOAN_CONFIG.MAX_ACTIVE_LOANS)
         throw new BadRequestException(
           `Usuário atingiu o número máximo de locações`,

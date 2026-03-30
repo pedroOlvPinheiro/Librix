@@ -2,6 +2,7 @@ import { Book } from 'src/entities/book.entity';
 import { Repository } from 'typeorm';
 import { fakerPT_BR as faker } from '@faker-js/faker';
 import { Author } from 'src/entities/author.entity';
+import { min } from 'class-validator';
 
 export class BookSeeder {
   constructor(
@@ -28,6 +29,7 @@ export class BookSeeder {
           length: 13,
           exclude: validIsbn,
         }),
+        quantity: faker.number.int({ min: 0, max: 3 }),
         authors: selectedAuthors,
       };
 
