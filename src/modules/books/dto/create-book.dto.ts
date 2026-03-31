@@ -7,7 +7,6 @@ import {
   Max,
   IsArray,
   IsUUID,
-  IsNumber,
   IsOptional,
 } from 'class-validator';
 import { DecoratorMessage } from 'src/utils/decorator-message';

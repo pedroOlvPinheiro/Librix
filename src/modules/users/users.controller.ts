@@ -17,7 +17,9 @@ import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
 import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
 import { RoleEnum } from 'src/utils/enum/role.enum';
 import { Role } from 'src/common/decorator/role.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Role(RoleEnum.ADMIN)
 @Controller('users')
 export class UsersController {

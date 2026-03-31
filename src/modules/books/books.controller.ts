@@ -19,11 +19,19 @@ import { PaginationQueryDTO } from 'src/common/dto/pagination-query.dto';
 import { PaginatedResponseDTO } from 'src/common/dto/paginated-response.dto';
 import { RoleEnum } from 'src/utils/enum/role.enum';
 import { Role } from 'src/common/decorator/role.decorator';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
+  @ApiOperation({ summary: 'Cadastra um novo livro no acervo' })
+  @ApiResponse({ status: 201, description: 'Livro criado com sucesso.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos ou ISBN duplicado.',
+  })
   @Post()
   @Role(RoleEnum.ADMIN)
   @HttpCode(HttpStatus.CREATED)

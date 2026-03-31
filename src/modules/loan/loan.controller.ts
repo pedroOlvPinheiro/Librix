@@ -9,7 +9,9 @@ import { User } from 'src/common/decorator/user.decorator';
 import { UserPaginationQueryDTO } from 'src/common/dto/user-pagination.query.dto';
 import { RoleEnum } from 'src/utils/enum/role.enum';
 import { Role } from 'src/common/decorator/role.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('loan')
 export class LoanController {
   constructor(private readonly loanService: LoanService) {}
