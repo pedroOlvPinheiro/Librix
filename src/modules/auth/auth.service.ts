@@ -56,17 +56,17 @@ export class AuthService {
     const password = await bcrypt.hash(createUserDTO.password, HASH_SALT);
 
     await this.dataSource.transaction(async (entityManager: EntityManager) => {
-      const userRepository = entityManager.getRepository(User);
       const authRepository = entityManager.getRepository(Auth);
 
-      const userData = userRepository.create({ name: createUserDTO.name });
       const authData = authRepository.create({
         email: createUserDTO.email,
         password,
+        user: {
+          name: createUserDTO.name,
+        },
       });
 
-      await userRepository.save(userData);
-      await authRepository.save(authData);
+      await entityManager.save(authData);
     });
   }
 }

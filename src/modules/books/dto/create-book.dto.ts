@@ -21,7 +21,7 @@ export class CreateBookDTO {
   title: string;
 
   @ApiProperty({
-    example: '1592',
+    example: 1592,
     description: 'Ano de publicação do livro',
     minimum: 1500,
     maximum: new Date().getFullYear(),
