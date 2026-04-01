@@ -51,7 +51,11 @@ export class BooksController {
   }
 
   @ApiOperation({ summary: 'Retorna todos os livros no acervo' })
-  @ApiResponse({ status: 200, description: 'Livros retornados com sucesso' })
+  @ApiResponse({
+    status: 200,
+    description: 'Livros retornados com sucesso',
+    type: BookResponseDTO,
+  })
   @ApiResponse({ status: 401, description: 'Token expirado ou inexistente' })
   @Get()
   @Role(RoleEnum.USER)
@@ -66,7 +70,7 @@ export class BooksController {
     name: 'title',
     required: true,
     description: 'Titulo ou parte do titulo',
-    isArray: true,
+    isArray: false,
   })
   @ApiResponse({
     status: 200,
@@ -90,12 +94,16 @@ export class BooksController {
   @Patch('restore/:id')
   @Role(RoleEnum.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async restore(@Param() param: FindOneParams) {
+  async restore(@Param() param: FindOneParams): Promise<void> {
     await this.booksService.restore(param.id);
   }
 
   @ApiOperation({ summary: 'Busca um livro pelo id' })
-  @ApiResponse({ status: 200, description: 'Livro buscado com sucesso' })
+  @ApiResponse({
+    status: 200,
+    description: 'Livro buscado com sucesso',
+    type: BookResponseDTO,
+  })
   @ApiResponse({ status: 401, description: 'Token expirado ou inexistente' })
   @Get(':id')
   @Role(RoleEnum.USER)
