@@ -37,7 +37,7 @@ Após iniciar a aplicação, é possível testar os endpoints com cURL ou ferram
 
 - **Criar usuário:**  
   ```bash
-  curl -X POST http://localhost:3000/users \
+  curl -X POST http://localhost:3000/auth/signup \
        -H "Content-Type: application/json" \
        -d '{"name":"João","email":"joao@exemplo.com, "senha":"senha"}'
   ```  
@@ -45,7 +45,7 @@ Após iniciar a aplicação, é possível testar os endpoints com cURL ou ferram
 
 - **Autenticar (JWT):**  
   ```bash
-  curl -X POST http://localhost:3000/auth/login \
+  curl -X POST http://localhost:3000/auth/signin \
        -H "Content-Type: application/json" \
        -d '{"email":"joao@exemplo.com","password":"senha"}'
   ```  
