@@ -2,7 +2,6 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
-  HttpCode,
   HttpException,
   HttpStatus,
   Logger,
@@ -19,33 +18,60 @@ export class AllExceptionFilter implements ExceptionFilter {
     const request = context.getRequest<Request>();
     const response = context.getResponse<Response>();
 
-    let status: number;
-    let origin: ExceptionFilterErrorEnum;
-    let message: string;
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    if (exception instanceof HttpException) {
-      const messageResponse = exception.getResponse();
+    const origin =
+      exception instanceof HttpException
+        ? ExceptionFilterErrorEnum.REQUEST_ERROR
+        : ExceptionFilterErrorEnum.DATABASE_OR_INTERNAL_ERROR;
 
-      status = exception.getStatus();
-      origin = ExceptionFilterErrorEnum.REQUEST_ERROR;
-      message =
-        typeof messageResponse === 'object'
-          ? (messageResponse as any).message
-          : messageResponse;
-    } else {
-      status = 500;
-      origin = ExceptionFilterErrorEnum.DATABASE_OR_INTERNAL_ERROR;
-      message = 'Erro interno inesperado';
-    }
+    const message =
+      exception instanceof HttpException
+        ? this.extractMessage(exception.getResponse())
+        : 'Erro interno Inesperado';
 
-    response.status(status).json({
-      status,
+    const errorResponse = {
+      statusCode: status,
       timeStamp: new Date().toISOString(),
       path: request.url,
+      method: request.method,
       origin,
       message,
-    });
+    };
 
-    this.logger.error(exception);
+    this.handleLogging(exception, request, status);
+
+    response.status(status).json(errorResponse);
+  }
+
+  private extractMessage(response: string | object): string | string[] {
+    if (typeof response === 'object' && response != null) {
+      return (response as { message: string | string[] }).message;
+    }
+
+    return response as string | string[];
+  }
+
+  private handleLogging(exception: unknown, request: Request, status: number) {
+    const { method, url, ip } = request;
+
+    //Se for > 500, significa erro crítico interno
+    if (status >= 500) {
+      const stack =
+        exception instanceof Error ? exception.stack : 'Sem Stack Trace';
+
+      this.logger.error(
+        `[${method}] ${url} - Status: ${status} - Error: ${JSON.stringify(exception)} - Ip: ${ip}`,
+        stack,
+      );
+    } else {
+      //erro do cliente
+      this.logger.warn(
+        `[${method}] ${url} - Status: ${status} - Message: ${JSON.stringify(exception)}`,
+      );
+    }
   }
 }

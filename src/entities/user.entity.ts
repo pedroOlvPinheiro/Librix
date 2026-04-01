@@ -20,6 +20,6 @@ export class User extends Content {
   @OneToMany(() => Loan, (loan) => loan.user)
   loans: Loan[];
 
-  @OneToOne(() => Auth)
+  @OneToOne(() => Auth, (auth) => auth.user)
   auth: Auth;
 }
