@@ -80,6 +80,6 @@ O projeto segue padrões consolidados de arquitetura e código limpo:
 - **Injeção de Dependências:** Controladores e serviços desacoplados via injeção de dependências do NestJS, melhorando testabilidade.  
 - **Decorators Declarativos:** Validações e transformações feitas via decorators (ex.: `@IsEmail()`, `@Exclude()`) para código mais legível e organizado.
 
-Esta documentação foi atualizada para refletir o estado atual do projeto, incorporando todas as ferramentas e práticas aprendidas até o momento【41†L368-L372】【43†L257-L263】【45†L326-L329】【47†L324-L328】【51†L332-L334】. Com ela, qualquer desenvolvedor poderá entender o escopo, instalar facilmente o projeto e explorar suas funcionalidades de forma completa. 
+Esta documentação foi atualizada para refletir o estado atual do projeto, incorporando todas as ferramentas e práticas aprendidas até o momento. Com ela, qualquer desenvolvedor poderá entender o escopo, instalar facilmente o projeto e explorar suas funcionalidades de forma completa. 
 
-**Fontes:** Documentação oficial do NestJS【41†L368-L372】, TypeORM【43†L257-L263】 e repositórios de *class-validator*【45†L326-L329】, *class-transformer*【47†L324-L328】 e *nestjs/swagger*【51†L332-L334】 para consulta.
+**Fontes:** Documentação oficial do NestJS, TypeORM e repositórios de *class-validator*, *class-transformer* e *nestjs/swagger* para consulta.
